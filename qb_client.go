@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"sync"
@@ -26,12 +27,15 @@ type QBClient struct {
 }
 
 func NewQBClient(baseURL, username, password string) *QBClient {
+	jar, _ := cookiejar.New(nil)
+
 	return &QBClient{
 		baseURL:  strings.TrimRight(baseURL, "/"),
 		username: username,
 		password: password,
 		httpClient: &http.Client{
 			Timeout: 8 * time.Second,
+			Jar:     jar,
 		},
 	}
 }
