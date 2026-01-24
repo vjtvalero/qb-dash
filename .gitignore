@@ -1,0 +1,43 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output of the go command
+*.out
+
+# Dependency directories (vendor/)
+vendor/
+
+# GoLand project files
+.idea/
+
+# VS Code settings
+.vscode/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Build artifacts
+bin/
+*.o
+*.a
+*.gcda
+*.gcno
+*.gcov
+
+# Coverage files
+*.cover
+*.cov
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
