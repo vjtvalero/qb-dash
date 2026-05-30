@@ -1,19 +1,23 @@
-# --- build stage ---
-FROM golang:1.25-alpine AS build
+FROM node:20-alpine AS deps
 WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
-
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o qb-dash .
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
 
-# --- run stage ---
-FROM alpine:3.20
+FROM node:20-alpine AS runner
 WORKDIR /app
-
-COPY --from=build /app/qb-dash /app/qb-dash
-
-EXPOSE 8079
-ENTRYPOINT ["/app/qb-dash"]
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]
